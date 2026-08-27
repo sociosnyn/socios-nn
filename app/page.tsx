@@ -2,18 +2,25 @@ export default async function Home() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
-  const res = await fetch(
-    supabaseUrl + '/rest/v1/vehiculos?estado=eq.disponible&order=destacado.desc,created_at.desc&limit=6',
-    {
-      headers: {
-        apikey: supabaseKey,
-        Authorization: 'Bearer ' + supabaseKey,
-      },
-      cache: 'no-store',
-    }
-  )
+  let vehiculos = []
 
-  const vehiculos = await res.json()
+  try {
+    const res = await fetch(
+      supabaseUrl + '/rest/v1/vehiculos?estado=eq.disponible&order=destacado.desc,created_at.desc&limit=6',
+      {
+        headers: {
+          apikey: supabaseKey,
+          Authorization: 'Bearer ' + supabaseKey,
+        },
+        cache: 'no-store',
+      }
+    )
+    if (res.ok) {
+      vehiculos = await res.json()
+    }
+  } catch (e) {
+    vehiculos = []
+  }
 
   return (
     <main className="min-h-screen bg-gray-950 text-white">
@@ -29,22 +36,26 @@ export default async function Home() {
 
       <section className="max-w-7xl mx-auto px-6 py-16">
         <h2 className="text-2xl font-bold mb-8 text-center">Vehiculos disponibles</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {vehiculos.map((v: any) => (
-            <div key={v.id} className="bg-gray-900 rounded-2xl overflow-hidden border border-gray-800">
-              <div className="h-52 bg-gray-800 flex items-center justify-center">
-                {v.foto_principal ? <img src={v.foto_principal} alt={v.marca} className="w-full h-full object-cover" /> : <span className="text-gray-600 text-sm">Sin foto</span>}
+        {vehiculos.length === 0 ? (
+          <p className="text-center text-gray-500">Pronto tendremos vehiculos disponibles</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {vehiculos.map((v: any) => (
+              <div key={v.id} className="bg-gray-900 rounded-2xl overflow-hidden border border-gray-800">
+                <div className="h-52 bg-gray-800 flex items-center justify-center">
+                  {v.foto_principal ? <img src={v.foto_principal} alt={v.marca} className="w-full h-full object-cover" /> : <span className="text-gray-600 text-sm">Sin foto</span>}
+                </div>
+                <div className="p-4">
+                  {v.destacado && <span className="text-xs bg-yellow-400 text-black font-bold px-2 py-1 rounded-full mb-2 inline-block">Destacado</span>}
+                  <h3 className="text-lg font-bold">{v.marca} {v.modelo} {v.anio}</h3>
+                  <p className="text-gray-400 text-sm mb-3">{v.kilometraje?.toLocaleString()} km</p>
+                  <p className="text-yellow-400 text-xl font-bold mb-4">${v.precio_venta?.toLocaleString('es-CO')}</p>
+                  <a href={'https://wa.me/573207519504?text=Me%20interesa%20el%20' + v.marca + '%20' + v.modelo} target="_blank" className="block text-center bg-green-500 text-white font-bold py-2 rounded-xl">Me interesa</a>
+                </div>
               </div>
-              <div className="p-4">
-                {v.destacado && <span className="text-xs bg-yellow-400 text-black font-bold px-2 py-1 rounded-full mb-2 inline-block">Destacado</span>}
-                <h3 className="text-lg font-bold">{v.marca} {v.modelo} {v.anio}</h3>
-                <p className="text-gray-400 text-sm mb-3">{v.kilometraje?.toLocaleString()} km</p>
-                <p className="text-yellow-400 text-xl font-bold mb-4">${v.precio_venta?.toLocaleString('es-CO')}</p>
-                <a href={'https://wa.me/573207519504?text=Me%20interesa%20el%20' + v.marca + '%20' + v.modelo} target="_blank" className="block text-center bg-green-500 text-white font-bold py-2 rounded-xl">Me interesa</a>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
       <footer className="text-center text-gray-600 py-8 text-sm">2025 Socios N&amp;N - Medellin</footer>
