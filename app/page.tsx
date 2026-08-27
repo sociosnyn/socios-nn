@@ -27,8 +27,7 @@ export default async function Home() {
         
           href="https://wa.me/573207519504?text=Hola%20quiero%20informacion"
           target="_blank"
-          className="inline-block bg-green-500 text-white font-bold px-8 py-4 rounded-full text-lg"
-        >
+          className="inline-block bg-green-500 text-white font-bold px-8 py-4 rounded-full text-lg">
           Hablar con un asesor
         </a>
       </section>
