@@ -89,5 +89,5 @@ export default async function Dashboard() {
             </div>
           </div>
         </div>
-
+// v2
         {/* Menú secciones */}
